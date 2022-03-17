@@ -119,6 +119,7 @@ def eskaera_3():
     print("3.Eskaeran Cookia: ", cookie)
     print("3.Eskaeran LOCATION: ", uriEskaera)
 def eskaera_4():
+    global uriEskaera
     print(uriEskaera)
     metodoa = "GET"
     # GET / HTTP / 1.1
@@ -137,15 +138,40 @@ def eskaera_4():
 
     # HTML parseatuko dugu
 
-
     soup = BeautifulSoup(html, 'html.parser')
     izena = soup.find('span', {'class': 'usertext mr-1'})
+    errenkadak = soup.find_all('div', {'class': 'info'})
+    for idx, errenkada in enumerate(errenkadak):
+        irakasgaiak = errenkada.h3.a.text
+        if (irakasgaiak == 'Web Sistemak'):
+            uriEskaera = errenkada.a['href']
+            print("Irakasgaia: ", irakasgaiak)
+            print("Eskaera: ", uriEskaera)
 
-    print("Erabiltzailearen Izen-Abizena: ", izena)
+def eskaera_5():
 
+    # Web Sistema ikasgaiko eskaera egindo da metodo honetan.
+    # GET / course / view.php?id = 57996
+    # HTTP / 1.1
+    # Host: egela.ehu.eus
+    # Cookie: MoodleSessionegela = u47586166f8ag046jf14eau8vbhjr1a2
+    metodoa = 'GET'
+    goiburuak = {'Host': uriEskaera.split('/')[2],
+                 'Cookie': cookie}
+
+    erantzuna = requests.get(uriEskaera, headers=goiburuak, allow_redirects=False)
+    print("5.Eskaeraren metodoa eta URIa :", metodoa, uriEskaera)
+    kodea = erantzuna.status_code
+    deskribapena = erantzuna.reason
+    print("5.Eskaera " + str(kodea) + " " + deskribapena)
+    print("5.Eskaeran Cookia: ", cookie)
+    html = erantzuna.content
+    soup = BeautifulSoup(html, 'html.parser')
+    #print(html)
 if __name__ == '__main__':
     datuak_eskatu()
     eskaera_1()
     eskaera_2()
     eskaera_3()
     eskaera_4()
+    eskaera_5()
