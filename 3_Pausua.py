@@ -149,7 +149,7 @@ def eskaera_4():
             print("Eskaera: ", uriEskaera)
 
 def eskaera_5():
-
+    global uriEskaera
     # Web Sistema ikasgaiko eskaera egindo da metodo honetan.
     # GET / course / view.php?id = 57996
     # HTTP / 1.1
@@ -167,7 +167,56 @@ def eskaera_5():
     print("5.Eskaeran Cookia: ", cookie)
     html = erantzuna.content
     soup = BeautifulSoup(html, 'html.parser')
+    estekak = soup.find_all('img', {'class': 'iconlarge activityicon'})
+    #estekaPDP = estekak['src']
+    #print(estekak)
+    #print(estekaPDP)
+    for errenkada in estekak:
+        if(errenkada['src'].find("/pdf") != -1):
+            print("\n##### PDF-a bat aurkitu da! #####")
+            pdf_link = errenkada['src']
+            uriEskaera = errenkada.parent['href'] #https://api.jquery.com/parent/
+            print(pdf_link)
+            print(uriEskaera)
+            pdf_info = pdfEskaera()
+            print("PDF_INFO: ", pdf_info)
+
     #print(html)
+
+def pdfEskaera():
+    metodoa = 'GET'
+    goiburuak = {'Host': uriEskaera.split('/')[2],
+                 'Cookie': cookie}
+
+    erantzuna = requests.get(uriEskaera, headers=goiburuak, allow_redirects=False)
+    print("pdfEskaera --> Eskaeraren metodoa eta URIa :", metodoa, uriEskaera)
+    kodea = erantzuna.status_code
+    deskribapena = erantzuna.reason
+    print("pdfEskaera --> " + str(kodea) + " " + deskribapena)
+    print("pdfEskaera --> Cookia: ", cookie)
+    html = erantzuna.content
+    soup = BeautifulSoup(html, 'html.parser')
+    pdf = soup.find('div', {'class': 'resourceworkaround'})
+    print(pdf)
+    pdf_Uri = pdf.a['href']
+    pdf_Izena = pdf_Uri.split('/')[-1]
+    print("PDF_URI: ", pdf_Uri)
+    print()
+    print("PDF_IZENA: ", pdf_Izena)
+    return pdf_Uri, pdf_Izena
+
+def pdfDeskarga(pdfUri, pdfIzena):
+    print("##### PDF-a deskargatzen... #####")
+    metodoa = 'GET'
+    goiburuak = {'Host': pdfUri.split('/')[2],
+                 'Cookie': cookie}
+
+    erantzuna = requests.get(pdfUri, headers=goiburuak, allow_redirects=False)
+    print("pdfDeskarga --> Eskaeraren metodoa eta URIa :", metodoa, pdfUri)
+    kodea = erantzuna.status_code
+    deskribapena = erantzuna.reason
+    print("pdfDeskarga --> " + str(kodea) + " " + deskribapena)
+    print("pdfDeskarga --> Cookia: ", cookie)
 if __name__ == '__main__':
     datuak_eskatu()
     eskaera_1()
