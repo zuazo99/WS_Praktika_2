@@ -1,12 +1,15 @@
 import getpass
 import os
+import sys
 import urllib.parse
 
 import requests
 from bs4 import BeautifulSoup
 import urllib3
+from pynput import keyboard
 
 user = ''
+izenAbizen = ''
 password = ''
 cookie = ''
 loginToken = ''
@@ -17,8 +20,15 @@ pdfKop = 0
 def datuak_eskatu():
     global user #Aldagai globalak bihurtzeko eta bere balioa globalki aldatzeko
     global password
-    user = input("Sartu eGelako erabiltzailea, mesedez: ")
-
+    global izenAbizen
+    #user = input("Sartu eGelako erabiltzailea, mesedez: ")
+    if len(sys.argv) == 3:
+        user = sys.argv[1]
+        izenAbizen = sys.argv[2].upper() #stringa Maiuskula itzultzen du
+    else:
+        print("ERROREA! Argumentu bat edo 2 baino gehiago sartu dituzu")
+        print("Soilik sartu 2 argumentu. Adibidez: python.exe izenaPrograma.py erabiltzailea Izen Abizena")
+    print(user, izenAbizen)
     try:
         password = getpass.getpass(prompt='Pasahitza: ', stream=None)
     except Exception as error:
@@ -94,7 +104,7 @@ def eskaera_2():
     print("2.Eskaera: " + str(kodea) + " " + deskribapena)
     # Cookia berria lortu
     cookie = erantzuna.headers['Set-Cookie'].split(';')[0]
-    print("2.Eskaeran Cookia: ", cookie)
+    print("2.Eskaeran Cookie: ", cookie)
     if ('Location' in erantzuna.headers) is True:
         uriEskaera = erantzuna.headers['Location']
 
@@ -122,6 +132,7 @@ def eskaera_3():
     print("3.Eskaeran LOCATION: ", uriEskaera)
 def eskaera_4():
     global uriEskaera
+
     print(uriEskaera)
     metodoa = "GET"
     # GET / HTTP / 1.1
@@ -131,17 +142,24 @@ def eskaera_4():
                  'Cookie': cookie}
 
     erantzuna = requests.get(uriEskaera, headers=goiburuak, allow_redirects=False)
-    print("3.Eskaeraren metodoa eta URIa :", metodoa, uriEskaera)
+    print("4.Eskaeraren metodoa eta URIa :", metodoa, uriEskaera)
     kodea = erantzuna.status_code
     deskribapena = erantzuna.reason
     print("4.Eskaera " + str(kodea) + " " + deskribapena)
     print("4.Eskaeran Cookia: ", cookie)
     html = erantzuna.content
 
+    htmlString = str(html)
     # HTML parseatuko dugu
-
     soup = BeautifulSoup(html, 'html.parser')
+    if erantzuna.status_code == 200 and htmlString.find(izenAbizen) != -1:
+        print("KAUTOTU ONDO!!!!!!")
+    else:
+        print("Kautotu txarto burutu da.")
+        sys.exit(0)
+
     izena = soup.find('span', {'class': 'usertext mr-1'})
+    print("Nire Izena: ", izena.text)
     errenkadak = soup.find_all('div', {'class': 'info'})
     for idx, errenkada in enumerate(errenkadak):
         irakasgaiak = errenkada.h3.a.text
