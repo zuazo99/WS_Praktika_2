@@ -1,4 +1,5 @@
 import getpass
+import os
 import urllib.parse
 
 import requests
@@ -10,6 +11,7 @@ password = ''
 cookie = ''
 loginToken = ''
 uriEskaera = ''
+pdfKop = 0
 
 
 def datuak_eskatu():
@@ -180,10 +182,12 @@ def eskaera_5():
             print(uriEskaera)
             pdf_info = pdfEskaera()
             print("PDF_INFO: ", pdf_info)
-
+            pdfDeskarga(pdf_info[0], pdf_info[1])
     #print(html)
 
 def pdfEskaera():
+    # Karpeta bat sortu, pdf-ak gordetzeko
+    pdfKarpetaSortu()
     metodoa = 'GET'
     goiburuak = {'Host': uriEskaera.split('/')[2],
                  'Cookie': cookie}
@@ -206,6 +210,7 @@ def pdfEskaera():
     return pdf_Uri, pdf_Izena
 
 def pdfDeskarga(pdfUri, pdfIzena):
+    global pdfKop
     print("##### PDF-a deskargatzen... #####")
     metodoa = 'GET'
     goiburuak = {'Host': pdfUri.split('/')[2],
@@ -217,6 +222,21 @@ def pdfDeskarga(pdfUri, pdfIzena):
     deskribapena = erantzuna.reason
     print("pdfDeskarga --> " + str(kodea) + " " + deskribapena)
     print("pdfDeskarga --> Cookia: ", cookie)
+
+    #pdf-aren edukia fitxategi batean gordetzen
+    pdfEdukia = erantzuna.content
+    file = open("./pdf/" + pdfIzena, "wb")
+    file.write(pdfEdukia)
+    file.close()
+
+    print(pdfIzena + " deskargatu da")
+    pdfKop += 1
+
+def pdfKarpetaSortu():
+    if not os.path.exists("pdf"):
+        os.mkdir("pdf")
+
+
 if __name__ == '__main__':
     datuak_eskatu()
     eskaera_1()
