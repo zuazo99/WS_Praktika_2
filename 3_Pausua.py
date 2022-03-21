@@ -154,6 +154,7 @@ def eskaera_4():
     soup = BeautifulSoup(html, 'html.parser')
     if erantzuna.status_code == 200 and htmlString.find(izenAbizen) != -1:
         print("KAUTOTU ONDO!!!!!!")
+
     else:
         print("Kautotu txarto burutu da.")
         sys.exit(0)
@@ -253,7 +254,6 @@ def pdfDeskarga(pdfUri, pdfIzena):
 def pdfKarpetaSortu():
     if not os.path.exists("pdf"):
         os.mkdir("pdf")
-
 
 if __name__ == '__main__':
     datuak_eskatu()
