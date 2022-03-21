@@ -193,7 +193,7 @@ def eskaera_5():
     #print(estekak)
     #print(estekaPDP)
     for errenkada in estekak:
-        if(errenkada['src'].find("/pdf") != -1):
+        if(errenkada['src'].find("/pdf") != -1): # Ez badu aurkitzen -1 itzultzen du.
             print("\n##### PDF-a bat aurkitu da! #####")
             pdf_link = errenkada['src']
             uriEskaera = errenkada.parent['href'] #https://api.jquery.com/parent/
