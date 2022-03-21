@@ -28,6 +28,7 @@ def datuak_eskatu():
     else:
         print("ERROREA! Argumentu bat edo 2 baino gehiago sartu dituzu")
         print("Soilik sartu 2 argumentu. Adibidez: python.exe izenaPrograma.py erabiltzailea Izen Abizena")
+        sys.exit(0)
     print(user, izenAbizen)
     try:
         password = getpass.getpass(prompt='Pasahitza: ', stream=None)
